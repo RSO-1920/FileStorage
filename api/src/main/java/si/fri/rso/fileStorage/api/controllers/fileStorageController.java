@@ -7,7 +7,6 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 
-//import org.glassfish.jersey.media.multipart.FormDataParam;
 import si.fri.rso.fileStorage.services.fileStorageBean;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -38,12 +37,15 @@ public class fileStorageController {
     @Path("storeFile")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response storeFile(@FormDataParam("fileID") int fileID,
-                              @FormDataParam("fileName") String fileName,
-                              @FormDataParam("fileStream") InputStream fileStream) {
+    public Response storeFile(@FormDataParam("fileStream") InputStream fileStream) {
+        return Response.status(Response.Status.OK).entity(fileStream).build();
+    }
 
-    return Response.status(Response.Status.OK).entity(fileStream).build();
-    //return Response.status(Response.Status.OK).entity("file null").build();
-
+    @DELETE
+    @Path("deleteFile")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response storeFile(@FormDataParam("fileIdentifier") String fileIdentifier) {
+        return Response.status(Response.Status.OK).entity("Delted file " + fileIdentifier).build();
     }
 }
