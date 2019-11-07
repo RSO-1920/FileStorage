@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <kumuluzee.version>3.5.0</kumuluzee.version>
+        <aws.version>1.11.668</aws.version>
     </properties>
 
     <dependencyManagement>

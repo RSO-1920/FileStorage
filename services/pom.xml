@@ -11,5 +11,14 @@
 
     <artifactId>services</artifactId>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
+
+    </dependencies>
 
 </project>
