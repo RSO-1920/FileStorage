@@ -22,8 +22,8 @@ import java.util.List;
 public class fileStorageBean {
 
     AWSCredentials credentials = new BasicAWSCredentials(
-            "AKIAZRMME2ZHWBOPRSXJ",
-            "Is6HGlvzFH/39QtCps2sBZ0FLIqt3YPguiIhaos+"
+            "KIAZRMME2ZHWBOPRSXJ",
+            "s6HGlvzFH/39QtCps2sBZ0FLIqt3YPguiIhaos+"
     );
 
     AmazonS3 s3client = AmazonS3ClientBuilder
