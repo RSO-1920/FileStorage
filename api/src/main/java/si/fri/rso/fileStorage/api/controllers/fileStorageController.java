@@ -6,8 +6,11 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import javax.ws.rs.ApplicationPath;
+
+import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import si.fri.rso.fileStorage.services.fileStorageBean;
@@ -77,7 +80,10 @@ public class fileStorageController {
     @Produces(MediaType.MULTIPART_FORM_DATA)
     public Response downloadFile(@PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
         S3ObjectInputStream outputStream = fileStorage.downloadFile(bucketName, fileName);
-        return Response.status(Response.Status.OK).entity(outputStream).build();
+
+        final MultiPart multiPart = new MultiPart();
+        multiPart.bodyPart(new StreamDataBodyPart("fileStream", outputStream));
+        return Response.status(Response.Status.OK).entity(multiPart).build();
     }
 
 }
