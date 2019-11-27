@@ -2,6 +2,9 @@ package si.fri.rso.fileStorage.api.controllers;
 
 import javax.ws.rs.PathParam;
 //import org.glassfish.jersey.media.multipart.FormDataParam;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import javax.ws.rs.ApplicationPath;
@@ -15,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.util.List;
 
 @ApplicationScoped
 @Path("/fileTransfer")
@@ -26,26 +30,54 @@ public class fileStorageController {
     private fileStorageBean fileStorage;
 
     @GET
-    @Path("getFile")
-    @Produces(MediaType.MULTIPART_FORM_DATA)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response getFile(@FormDataParam("fileIdentifier") String fileIdentifier) {
-        return Response.status(Response.Status.OK).entity("returning: " + fileIdentifier).build();
+    public Response getFile() {
+        List<Bucket> buckets = fileStorage.listBuckets();
+        return Response.status(Response.Status.OK).entity(buckets).build();
+    }
+
+    @GET
+    @Path("{bucketName}")
+    public Response getFile(@PathParam("bucketName") String bucketName) {
+        ObjectListing files = fileStorage.listAllFiles(bucketName);
+        if(files == null)
+            return Response.status(Response.Status.NOT_FOUND).entity("no bucket with the given name").build();
+        else
+            return Response.status(Response.Status.OK).entity(files).build();
     }
 
     @POST
-    @Path("storeFile")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response storeFile(@FormDataParam("fileStream") InputStream fileStream) {
-        return Response.status(Response.Status.OK).entity(fileStream).build();
+    @Path("{bucketName}")
+    public Response createBucket(@PathParam("bucketName") String bucketName) {
+        Bucket createdBucket = fileStorage.createBucket(bucketName);
+        return Response.status(Response.Status.OK).entity(createdBucket).build();
     }
 
+
     @DELETE
-    @Path("deleteFile")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response storeFile(@FormDataParam("fileIdentifier") String fileIdentifier) {
-        return Response.status(Response.Status.OK).entity("Delted file " + fileIdentifier).build();
+    @Path("{bucketName}")
+    public Response deleteBucket(@PathParam("bucketName") String bucketName) {
+        boolean bucketeDeleated = fileStorage.deleteBucket(bucketName);
+        if (bucketeDeleated)
+            return Response.status(Response.Status.OK).entity("Deleted bucket " + bucketName).build();
+
+        return Response.status(Response.Status.OK).entity("Failed to delete bucket " + bucketName +"!").build();
     }
+
+    @POST
+    @Path("{bucketName}/{fileName}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadFile(@FormDataParam("fileStream") InputStream fileStream, @PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
+        fileStorage.uploadFile(fileStream, bucketName, fileName);
+
+        return Response.status(Response.Status.OK).entity("ok").build();
+    }
+
+    @GET
+    @Path("{bucketName}/{fileName}")
+    @Produces(MediaType.MULTIPART_FORM_DATA)
+    public Response downloadFile(@PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
+        S3ObjectInputStream outputStream = fileStorage.downloadFile(bucketName, fileName);
+        return Response.status(Response.Status.OK).entity(outputStream).build();
+    }
+
 }

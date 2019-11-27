@@ -7,8 +7,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.*;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -16,39 +15,45 @@ import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @ApplicationScoped
 public class fileStorageBean {
 
     AWSCredentials credentials = new BasicAWSCredentials(
-            "AKIAZRMME2ZHWBOPRSXJ",
-            "Is6HGlvzFH/39QtCps2sBZ0FLIqt3YPguiIhaos+"
+            "accessKey",
+            "secretKey"
     );
 
     AmazonS3 s3client = AmazonS3ClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
-            .withRegion(Regions.EU_WEST_2)
+            .withRegion(Regions.EU_NORTH_1)
             .build();
 
     public fileStorageBean() {
-        System.out.println("init");
+        System.out.println("fileStorageBean INIT");
     }
 
-    public boolean  createBucket(String bucketName) {
-        if(!s3client.doesBucketExistV2(bucketName)) {
-            s3client.createBucket(bucketName);
-            return true;
+    Random randomNumberGenerator = new Random();
+
+    public Bucket createBucket(String bucketName) {
+        bucketName = bucketName.toLowerCase();
+        while(s3client.doesBucketExistV2(bucketName)){
+            bucketName += Integer.toString(randomNumberGenerator.nextInt(9));
         }
-        return false;
+        Bucket createdBucket = s3client.createBucket(bucketName);
+        return createdBucket;
     }
 
-    public List<Bucket> getBuckets(){
+    public List<Bucket> listBuckets(){
         return s3client.listBuckets();
     }
 
     public boolean deleteBucket(String bucketName) {
+        if(!s3client.doesBucketExistV2(bucketName))
+            return false;
         try {
             s3client.deleteBucket(bucketName);
             return true;
@@ -58,7 +63,7 @@ public class fileStorageBean {
         }
     }
 
-    public String storeObject(InputStream inputStream, String bucketName, String fileName) {
+    public String uploadFile(InputStream inputStream, String bucketName, String fileName) {
         s3client.putObject(
                 bucketName,
                 fileName,
@@ -66,6 +71,26 @@ public class fileStorageBean {
                 new ObjectMetadata()
         );
         return fileName;
+    }
+
+    public S3ObjectInputStream downloadFile(String bucketName, String fileName) {
+        S3Object s3object = s3client.getObject(bucketName, fileName);
+        S3ObjectInputStream outputStream = s3object.getObjectContent();
+        return outputStream;
+    }
+
+    public ObjectListing listAllFiles(String bucketName){
+        if(s3client.doesBucketExistV2(bucketName))
+            System.out.println("listAllFiles in bucket " + bucketName);
+        else{
+            System.out.println("no bucket named " + bucketName);
+            return null;
+        }
+        ObjectListing objectListing = s3client.listObjects(bucketName);
+        for(S3ObjectSummary os : objectListing.getObjectSummaries()) {
+            System.out.println(os.getKey());
+        }
+        return objectListing;
     }
 
 }
