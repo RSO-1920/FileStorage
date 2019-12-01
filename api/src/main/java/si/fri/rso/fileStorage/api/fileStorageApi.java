@@ -1,5 +1,6 @@
 package si.fri.rso.fileStorage.api;
 
+import com.kumuluz.ee.discovery.annotations.RegisterService;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@RegisterService(value = "rso1920-fileStorage")
 @ApplicationPath("/v1")
 public class fileStorageApi extends Application {
     @Override
