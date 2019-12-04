@@ -66,15 +66,6 @@ public class fileStorageController {
         return Response.status(Response.Status.OK).entity("Failed to delete bucket " + bucketName +"!").build();
     }
 
-    @POST
-    @Path("{bucketName}/{fileName}")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadFile(@FormDataParam("fileStream") InputStream fileStream, @PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
-        fileStorage.uploadFile(fileStream, bucketName, fileName);
-
-        return Response.status(Response.Status.OK).entity("ok").build();
-    }
-
     @GET
     @Path("{bucketName}/{fileName}")
     @Produces(MediaType.MULTIPART_FORM_DATA)
@@ -84,6 +75,22 @@ public class fileStorageController {
         final MultiPart multiPart = new MultiPart();
         multiPart.bodyPart(new StreamDataBodyPart("fileStream", outputStream));
         return Response.status(Response.Status.OK).entity(multiPart).build();
+    }
+
+    @POST
+    @Path("{bucketName}/{fileName}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadFile(@FormDataParam("fileStream") InputStream fileStream, @PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
+        fileStorage.uploadFile(fileStream, bucketName, fileName);
+
+        return Response.status(Response.Status.OK).entity("ok").build();
+    }
+
+    @DELETE
+    @Path("{bucketName}/{fileName}")
+    public Response deleteFile(@PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
+        boolean deleted = fileStorage.deleteFile(bucketName, fileName);
+            return Response.status(Response.Status.OK).entity("file " + bucketName + "/" + fileName + " deleted: " + (deleted ? "successfully" : "unsuccessfully")).build();
     }
 
 }
