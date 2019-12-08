@@ -63,6 +63,13 @@ public class fileStorageBean {
         }
     }
 
+    public boolean deleteFile(String bucketName, String fileName) {
+        if(!s3client.doesBucketExistV2(bucketName))
+            return false;
+        s3client.deleteObject(bucketName, fileName);
+        return true;
+    }
+
     public String uploadFile(InputStream inputStream, String bucketName, String fileName) {
         s3client.putObject(
                 bucketName,
