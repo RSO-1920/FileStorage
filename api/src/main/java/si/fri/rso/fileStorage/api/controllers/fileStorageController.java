@@ -79,7 +79,9 @@ public class fileStorageController {
 
         final MultiPart multiPart = new MultiPart();
         multiPart.bodyPart(new StreamDataBodyPart("fileStream", outputStream));
-        return Response.status(Response.Status.OK).entity(multiPart).build();
+        // return Response.status(Response.Status.OK).entity(multiPart).build();
+        // .header("Content-Disposition","attachment; filename=\" " + fileName + "\"")
+        return Response.status(Response.Status.OK).entity(outputStream).build();
     }
 
     @POST
