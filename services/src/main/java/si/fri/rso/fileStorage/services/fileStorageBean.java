@@ -22,8 +22,8 @@ import java.util.Random;
 public class fileStorageBean {
 
     AWSCredentials credentials = new BasicAWSCredentials(
-        "AKIAIYLFPHLCJKO2RPPA",
-            "SzEGGG2swhM+z6ND5Jf7FrUj9oi25N/DaXRc6V8E"
+        "neki  ",
+            "neki"
     );
 
     AmazonS3 s3client = AmazonS3ClientBuilder
