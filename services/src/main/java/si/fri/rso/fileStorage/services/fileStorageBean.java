@@ -22,14 +22,14 @@ import java.util.Random;
 public class fileStorageBean {
 
     AWSCredentials credentials = new BasicAWSCredentials(
-        "accessKey",
-        "secretKey"
+        "nov",
+        "nov1"
     );
 
     AmazonS3 s3client = AmazonS3ClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
-            .withRegion(Regions.EU_NORTH_1)
+            .withRegion(Regions.EU_WEST_1)
             .build();
 
     public fileStorageBean() {
