@@ -13,6 +13,7 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import si.fri.rso.config.FileStorageConfigProperties;
 import si.fri.rso.fileStorage.services.fileStorageBean;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 @Path("/fileTransfer")
@@ -31,6 +33,9 @@ public class fileStorageController {
 
     @Inject
     private fileStorageBean fileStorage;
+
+    @Inject
+    private FileStorageConfigProperties fileStorageConfigProperties;
 
     @GET
     public Response getFile() {
@@ -72,16 +77,21 @@ public class fileStorageController {
     public Response downloadFile(@PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
         S3ObjectInputStream outputStream = fileStorage.downloadFile(bucketName, fileName);
 
-        final MultiPart multiPart = new MultiPart();
+        /*final MultiPart multiPart = new MultiPart();
         multiPart.bodyPart(new StreamDataBodyPart("fileStream", outputStream));
-        return Response.status(Response.Status.OK).entity(multiPart).build();
+        return Response.status(Response.Status.OK).entity(multiPart).build();*/
+        return Response.status(Response.Status.OK).entity(outputStream).build();
     }
 
     @POST
     @Path("{bucketName}/{fileName}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadFile(@FormDataParam("fileStream") InputStream fileStream, @PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
+    public Response uploadFile(@FormDataParam("fileStream") InputStream fileStream, @PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) throws InterruptedException {
         fileStorage.uploadFile(fileStream, bucketName, fileName);
+
+        if (!this.fileStorageConfigProperties.getServiceAvailable() ) {
+            TimeUnit.MINUTES.sleep(1);
+        }
 
         return Response.status(Response.Status.OK).entity("ok").build();
     }

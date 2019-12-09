@@ -1,5 +1,21 @@
 kumuluzee:
-  name: fileStorage
-  version: 1.0.0
+  name: rso1920-fileStorage
   env:
     name: dev
+  version: 1.0.0
+  server:
+    base-url: http://localhost:8081
+    http:
+      port: 8081
+  config:
+    start-retry-delay-ms: 500
+    max-retry-delay-ms: 900000
+    etcd:
+      hosts: http://localhost:2379
+  discovery:
+    etcd:
+      hosts: http://localhost:2379
+    ttl: 30
+    ping-interval: 5
+rest-config:
+  service-available: true
