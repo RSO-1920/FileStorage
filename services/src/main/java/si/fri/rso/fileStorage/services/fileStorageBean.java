@@ -26,8 +26,6 @@ public class fileStorageBean {
         "nov1"
     );
 
-    //travis test
-
     AmazonS3 s3client = AmazonS3ClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
