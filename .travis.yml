@@ -26,6 +26,6 @@ script:
   - docker tag rso1920/filestorage:1.0.0-SNAPSHOT-$TRAVIS_JOB_NUMBER rso1920/filestorage:withoutAWSCredentials
 
 after_success:
-  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker push "$DOCKER_IMAGE"
   - docker push rso1920/filestorage:withoutAWSCredentials
