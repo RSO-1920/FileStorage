@@ -23,3 +23,8 @@ kumuluzee:
         connection-url: http://localhost:2379/health
 rest-config:
   service-available: true
+app-properties:
+  aws:
+    s3:
+      access-key: accessKey
+      secret-key: secretKey

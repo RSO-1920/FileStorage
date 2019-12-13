@@ -1,5 +1,0 @@
-kumuluzee:
-  name: fileStorage
-  version: 1.0.0
-  env:
-    name: dev

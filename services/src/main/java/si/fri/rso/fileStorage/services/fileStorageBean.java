@@ -1,5 +1,7 @@
 package si.fri.rso.fileStorage.services;
+import si.fri.rso.config.AppProperties;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -9,9 +11,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import si.fri.rso.config.FileStorageConfigProperties;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +25,32 @@ import java.util.Random;
 @ApplicationScoped
 public class fileStorageBean {
 
-    AWSCredentials credentials = new BasicAWSCredentials(
-        "nov",
-        "nov1"
-    );
+    @Inject
+    private AppProperties appProperties;
 
-    AmazonS3 s3client = AmazonS3ClientBuilder
-            .standard()
-            .withCredentials(new AWSStaticCredentialsProvider(credentials))
-            .withRegion(Regions.EU_WEST_1)
-            .build();
+    AWSCredentials credentials;
+    AmazonS3 s3client;
+
+    @PostConstruct
+    void init() {
+        try{
+            credentials = new BasicAWSCredentials(
+                appProperties.getAwsAccessKey(),
+                appProperties.getAwsSecretKey()
+            );
+
+            s3client = AmazonS3ClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withRegion(Regions.EU_WEST_1)
+                    .build();
+
+        } catch (Exception e) {
+            throw new AmazonClientException("Cannot initialize credentials.", e);
+        }
+    }
 
     public fileStorageBean() {
-        System.out.println("fileStorageBean INIT");
     }
 
     Random randomNumberGenerator = new Random();
