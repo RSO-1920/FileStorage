@@ -1,43 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rso1920-file-manager-deployment
+  name: rso1920-file-storage-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rso1920-file-manager
+      app: rso1920-file-storage
   template:
     metadata:
       labels:
-        app: rso1920-file-manager
+        app: rso1920-file-storage
     spec:
       containers:
-        - image: rso1920/filemanager:latest
-          name: rso1920-file-manager
+        - image: rso1920/filestorage:withoutAWSCredentials
+          name: rso1920-file-storage
           env:
             - name: KUMULUZEE_DISCOVERY_ETCD_HOSTS
               value: http://etcd:2379
             - name: KUMULUZEE_CONFIG_ETCD_HOSTS
               value: http://etcd:2379
             - name: KUMULUZEE_SERVER_BASEURL
-              value: http://10.28.2.251:8089
+              value: http://10.28.11.152:8081
             - name: KUMULUZEE_HEALTH_CHECKS_ETCDHEALTHCHECK_CONNECTIONURL
               value: http://etcd:2379/health
           ports:
-            - containerPort: 8089
-              name: file-manager
+            - containerPort: 8081
+              name: file-storage
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /health/live
-              port: file-manager
+              port: file-storage
             initialDelaySeconds: 60
             periodSeconds: 3
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: file-manager
+              port: file-storage
             initialDelaySeconds: 60
             periodSeconds: 3
 ---
@@ -45,12 +45,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rso1920-file-manager
+  name: rso1920-file-storage
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
-    - port: 8089
+    - port: 8081
       protocol: TCP
-      targetPort: file-manager
+      targetPort: file-storage
   selector:
-    app: rso1920-file-manager
+    app: rso1920-file-storage
