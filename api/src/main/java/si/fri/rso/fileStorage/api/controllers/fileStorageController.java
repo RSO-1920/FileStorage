@@ -165,7 +165,7 @@ public class fileStorageController {
     @Path("{bucketName}/{fileName}")
     public Response deleteFile(@PathParam("bucketName") String bucketName, @PathParam("fileName") String fileName) {
         boolean deleted = fileStorage.deleteFile(bucketName, fileName);
-            return Response.status(deleted ? Response.Status.OK : Response.Status.NOT_FOUND).entity("file " + bucketName + "/" + fileName + " deleted: " + (deleted ? "successfully" : "unsuccessfully")).build();
+        return Response.status(deleted ? Response.Status.OK : Response.Status.NOT_FOUND).entity("file " + bucketName + "/" + fileName + " deleted: " + (deleted ? "successfully" : "unsuccessfully")).build();
     }
 
 }

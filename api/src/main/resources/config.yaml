@@ -21,6 +21,12 @@ kumuluzee:
     checks:
       etcd-health-check:
         connection-url: http://localhost:2379/health
+  grpc:
+    server:
+      url: localhost
+      http:
+        port: 9001
+
 rest-config:
   service-available: true
 app-properties:
