@@ -27,6 +27,9 @@
         <kumuluzee-config.version>1.2.0</kumuluzee-config.version>
         <kumuluzee-discovery.version>1.1.1</kumuluzee-discovery.version>
         <kumuluzee-openapi.version>1.0.1</kumuluzee-openapi.version>
+
+        <kumuluzee.grpc.version>1.1.0</kumuluzee.grpc.version>
+        <grpc.version>1.18.0</grpc.version>
     </properties>
 
     <dependencyManagement>
@@ -73,6 +76,11 @@
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
             <version>2.28</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee.grpc</groupId>
+            <artifactId>kumuluzee-grpc</artifactId>
+            <version>${kumuluzee.grpc.version}</version>
         </dependency>
     </dependencies>
 
