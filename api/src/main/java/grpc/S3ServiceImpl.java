@@ -1,9 +1,7 @@
 package grpc;
-
-import beans.UserBean;
 import com.kumuluz.ee.grpc.annotations.GrpcService;
-import entity.User;
 import io.grpc.stub.StreamObserver;
+import si.fri.rso.fileStorage.services.fileStorageBean;
 
 import javax.enterprise.inject.spi.CDI;
 import java.util.logging.Logger;
@@ -12,23 +10,21 @@ import java.util.logging.Logger;
 public class S3ServiceImpl extends S3Grpc.S3ImplBase {
 
     private static final Logger logger = Logger.getLogger(S3ServiceImpl.class.getName());
-    // private UserBean userBean;
+    private fileStorageBean fileStorage;
 
     @Override
     public void deleteFileOnBucket(S3Service.S3DeleteFileOnBucketRequest request, StreamObserver<S3Service.S3DeleteFileOnBucketResponse> responseObserver) {
-
-        // userBean = CDI.current().select(UserBean.class).get();
-        // User user = userBean.getUser(request.getId());
 
         System.out.println("GRPC request");
         System.out.println(request.getBucketname());
         System.out.println(request.getFilename());
 
+        fileStorage = CDI.current().select(fileStorageBean.class).get();
+        boolean isDeleted = fileStorage.deleteFile(request.getBucketname(), request.getFilename());
         S3Service.S3DeleteFileOnBucketResponse response;
-
         response = S3Service.S3DeleteFileOnBucketResponse.newBuilder()
-                .setResponsemsg("success")
-                .setResponsestatus(true)
+                .setResponsemsg("Deletion of " + request.getBucketname() + "/" + request.getFilename())
+                .setResponsestatus(isDeleted)
                 .build();
         responseObserver.onNext(response);
 
