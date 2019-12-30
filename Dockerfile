@@ -6,6 +6,6 @@ WORKDIR /app
 
 ADD ./api/target/api-1.1-SNAPSHOT.jar /app
 
-EXPOSE 8081
+EXPOSE 8081 9001
 
 CMD ["java", "-jar", "api-1.1-SNAPSHOT.jar"]
